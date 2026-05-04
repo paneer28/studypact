@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard.jsx'
 import Session from './pages/Session.jsx'
 import Profile from './pages/Profile.jsx'
 import Leaderboard from './pages/Leaderboard.jsx'
+import AuthCallback from './pages/AuthCallback.jsx'
 
 function Protected({ children }) {
   const { user, loading } = useAuth()
@@ -23,6 +24,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
           <Route path="/session/:id" element={<Protected><Session /></Protected>} />
           <Route path="/profile" element={<Protected><Profile /></Protected>} />
