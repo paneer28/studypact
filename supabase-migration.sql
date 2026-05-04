@@ -3,7 +3,8 @@
 -- ============================================================
 
 -- 1. Queue: add UPDATE policy so upsert works if needed in future
-create policy if not exists "update own queue entry" on queue
+drop policy if exists "update own queue entry" on queue;
+create policy "update own queue entry" on queue
   for update
   using  (exists (select 1 from users u where u.auth_id = auth.uid() and u.id = user_id))
   with check (exists (select 1 from users u where u.auth_id = auth.uid() and u.id = user_id));
