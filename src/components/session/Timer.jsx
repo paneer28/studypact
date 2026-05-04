@@ -28,7 +28,7 @@ export default function Timer() {
         <h3 className="font-semibold">Time left</h3>
         <div className="font-mono text-2xl">{mm}:{ss}</div>
       </div>
-      <div className="h-2 rounded-full bg-slate-200 overflow-hidden mt-2">
+      <div className="h-2 rounded-full bg-surface-700 overflow-hidden mt-2">
         <div className="h-full bg-brand-500 transition-all" style={{ width: `${pct}%` }} />
       </div>
     </div>

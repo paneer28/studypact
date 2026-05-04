@@ -31,10 +31,10 @@ export default function CommitForm() {
     return (
       <div className="card">
         <h3 className="font-semibold text-lg">You committed to:</h3>
-        <p className="mt-1 text-slate-700">{mine}</p>
-        <p className="text-sm text-slate-500">for {session[`duration_${iAm}`]} min</p>
+        <p className="mt-1 text-slate-300">{mine}</p>
+        <p className="text-sm text-slate-400">for {session[`duration_${iAm}`]} min</p>
         {!theirs && (
-          <p className="mt-3 text-slate-500 text-sm">
+          <p className="mt-3 text-slate-400 text-sm">
             Waiting for {partner?.username ?? 'your partner'} to commit…
           </p>
         )}
@@ -53,7 +53,7 @@ export default function CommitForm() {
         required
       />
       <div>
-        <label className="text-sm text-slate-600">How long will it take?</label>
+        <label className="text-sm text-slate-400">How long will it take?</label>
         <select
           className="input mt-1"
           value={duration}

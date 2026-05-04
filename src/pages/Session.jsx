@@ -84,7 +84,7 @@ function TaskCard({ who, task }) {
   return (
     <div className="card">
       <div className="text-xs uppercase tracking-wide text-slate-500">{who} is working on</div>
-      <div className="mt-1 text-slate-800">{task}</div>
+      <div className="mt-1 text-slate-200">{task}</div>
     </div>
   )
 }

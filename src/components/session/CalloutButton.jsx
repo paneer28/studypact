@@ -52,7 +52,7 @@ export default function CalloutButton() {
     <button
       onClick={onCallout}
       disabled={disabled}
-      className={`btn ${disabled ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-amber-500 text-white hover:bg-amber-600'}`}
+      className={`btn ${disabled ? 'bg-surface-700 text-slate-500 cursor-not-allowed' : 'bg-amber-500 text-white hover:bg-amber-600'}`}
       title="Pings your partner if they look distracted"
     >
       {label}

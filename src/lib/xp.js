@@ -32,34 +32,11 @@ export function progressInLevel(xp, level) {
 export async function awardXp(userId, reason, sessionId = null, amountOverride = null) {
   const amount = amountOverride ?? XP_AWARDS[reason] ?? 0
   if (amount === 0) return
+  // DB trigger sync_user_xp handles updating users.xp and users.level
   await supabase.from('xp_events').insert({ user_id: userId, amount, reason, session_id: sessionId })
-  const { data: u } = await supabase.from('users').select('xp').eq('id', userId).single()
-  const newXp = Math.max(0, (u?.xp ?? 0) + amount)
-  await supabase.from('users').update({ xp: newXp, level: levelForXp(newXp) }).eq('id', userId)
 }
 
 export async function bumpStreak(userId) {
-  const today = new Date().toISOString().slice(0, 10)
-  const { data: u } = await supabase
-    .from('users')
-    .select('streak,last_session_date,sessions_completed')
-    .eq('id', userId)
-    .single()
-  if (!u) return
-  const last = u.last_session_date
-  let streak = u.streak ?? 0
-  if (last === today) {
-    // same day — streak unchanged
-  } else {
-    const yest = new Date(Date.now() - 86400000).toISOString().slice(0, 10)
-    streak = last === yest ? streak + 1 : 1
-  }
-  await supabase.from('users').update({
-    streak,
-    last_session_date: today,
-    sessions_completed: (u.sessions_completed ?? 0) + 1,
-  }).eq('id', userId)
-  if (streak > 0 && streak % 3 === 0) {
-    await awardXp(userId, 'streak_bonus')
-  }
+  // SECURITY DEFINER RPC handles streak, last_session_date, sessions_completed, and streak_bonus XP
+  await supabase.rpc('bump_streak', { p_user_id: userId })
 }

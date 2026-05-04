@@ -19,6 +19,7 @@ export function AuthProvider({ children }) {
       setSession(data.session)
       loadProfile(data.session?.user?.id).finally(() => setLoading(false))
     })
+
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s)
       loadProfile(s?.user?.id)
@@ -26,6 +27,8 @@ export function AuthProvider({ children }) {
     return () => sub.subscription.unsubscribe()
   }, [loadProfile])
 
+  // Email/password signup — profile row is created by the DB trigger (handle_new_auth_user).
+  // Username from options.data is read by the trigger from raw_user_meta_data.
   const signUp = async ({ email, password, username }) => {
     const school = email.match(/@([^.]+\.edu)$/i)?.[1] ?? null
     const { error } = await supabase.auth.signUp({
@@ -41,6 +44,14 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/dashboard` },
+    })
+    if (error) throw error
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut()
     setProfile(null)
@@ -49,7 +60,7 @@ export function AuthProvider({ children }) {
   const refreshProfile = () => loadProfile(session?.user?.id)
 
   return (
-    <AuthContext.Provider value={{ user: session?.user ?? null, profile, loading, signUp, signIn, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user: session?.user ?? null, profile, loading, signUp, signIn, signInWithGoogle, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   )

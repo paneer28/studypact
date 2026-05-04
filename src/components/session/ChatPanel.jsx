@@ -72,7 +72,7 @@ export default function ChatPanel() {
 function Message({ m, from, isMe }) {
   if (m.type === 'callout') {
     return (
-      <div className="rounded-lg bg-red-50 border border-red-200 text-red-800 px-3 py-2 text-sm">
+      <div className="rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 px-3 py-2 text-sm">
         👀 <b>{from}</b> called you out: {m.content}
       </div>
     )
@@ -82,8 +82,8 @@ function Message({ m, from, isMe }) {
   }
   return (
     <div className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-      <div className={`max-w-[75%] rounded-2xl px-3 py-1.5 text-sm ${isMe ? 'bg-brand-500 text-white' : 'bg-slate-100 text-slate-800'}`}>
-        <div className={`text-[10px] uppercase tracking-wide ${isMe ? 'text-white/70' : 'text-slate-500'}`}>{from}</div>
+      <div className={`max-w-[75%] rounded-2xl px-3 py-1.5 text-sm ${isMe ? 'bg-brand-500 text-white' : 'bg-surface-700 text-slate-200'}`}>
+        <div className={`text-[10px] uppercase tracking-wide ${isMe ? 'text-white/70' : 'text-slate-400'}`}>{from}</div>
         {m.content}
       </div>
     </div>

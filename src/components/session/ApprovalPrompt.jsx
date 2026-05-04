@@ -54,18 +54,18 @@ export default function ApprovalPrompt() {
 
   if (iApprovedPartner) {
     return (
-      <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-4 text-sm">
+      <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-4 text-sm text-emerald-300">
         You approved {partner?.username ?? 'your partner'}. Nice.
       </div>
     )
   }
 
   return (
-    <div className="rounded-xl bg-amber-50 border border-amber-200 p-4">
-      <p className="text-sm">
+    <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-4">
+      <p className="text-sm text-slate-300">
         <b>{partner?.username ?? 'Your partner'}</b> says they're done with:
       </p>
-      <p className="mt-1 text-slate-800">"{partnerTask}"</p>
+      <p className="mt-1 text-slate-200">"{partnerTask}"</p>
       {!disputing ? (
         <div className="mt-3 flex gap-2">
           <button onClick={approve} disabled={busy} className="btn-primary">✅ Approve</button>

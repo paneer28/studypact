@@ -14,7 +14,7 @@ export function useMatchmaking(profile) {
     if (!profile) return
 
     // 1. Check for an already-existing active session for this user (in case we
-    //    missed the transition).
+    //    missed the transition). Also clean up our queue entry if found.
     const { data: existing } = await supabase
       .from('sessions')
       .select('id,status')
@@ -23,6 +23,9 @@ export function useMatchmaking(profile) {
       .order('started_at', { ascending: false })
       .limit(1)
     if (existing && existing.length > 0) {
+      // Clean up our own queue entry (partner's was already cleaned by creator,
+      // or creator's was cleaned when they matched us).
+      await supabase.from('queue').delete().eq('user_id', profile.id)
       setMatchedSessionId(existing[0].id)
       setStatus('matched')
       return
@@ -51,23 +54,30 @@ export function useMatchmaking(profile) {
           .select()
           .single()
         if (sErr) return setError(sErr.message)
-        await supabase.from('queue').delete().in('user_id', [profile.id, partner.user_id])
+        // Only delete our own row — RLS won't allow deleting partner's row.
+        // Partner cleans up their own entry when they detect the session in step 1.
+        await supabase.from('queue').delete().eq('user_id', profile.id)
         setMatchedSessionId(sess.id)
         setStatus('matched')
       }
-      // If I'm not the creator, the other user will insert the session and
-      // delete me from the queue; on the next poll I'll find the session via
-      // step 1 above.
+      // If I'm not the creator, the other user will insert the session.
+      // On the next poll, step 1 above will find it and clean up my queue entry.
     }
   }, [profile])
 
   const join = useCallback(async () => {
     if (!profile) return
     setError('')
+    // Use ignoreDuplicates instead of upsert — avoids triggering an UPDATE
+    // which would fail RLS (there is no UPDATE policy on queue).
     const { error: insErr } = await supabase
       .from('queue')
-      .upsert({ user_id: profile.id, school: profile.school }, { onConflict: 'user_id' })
-    if (insErr) return setError(insErr.message)
+      .insert({ user_id: profile.id, school: profile.school })
+      .select()
+    // Ignore unique-violation (already in queue)
+    if (insErr && !insErr.message?.includes('duplicate') && !insErr.code?.includes('23505')) {
+      return setError(insErr.message)
+    }
     setStatus('waiting')
   }, [profile])
 
