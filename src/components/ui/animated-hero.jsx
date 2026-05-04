@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { MoveRight, PhoneCall } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { Button } from './button.jsx'
 
 export function Hero() {
@@ -26,9 +27,11 @@ export function Hero() {
       <div className="container mx-auto">
         <div className="flex gap-8 py-20 lg:py-32 items-center justify-center flex-col">
           <div>
-            <Button variant="secondary" size="sm" className="gap-4">
-              Read our launch article <MoveRight className="w-4 h-4" />
-            </Button>
+            <Link to="/launch">
+              <Button variant="secondary" size="sm" className="gap-4">
+                Read our launch article <MoveRight className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
           <div className="flex gap-4 flex-col">
             <h1 className="text-5xl md:text-7xl max-w-2xl tracking-tighter text-center font-regular font-display">
@@ -58,12 +61,16 @@ export function Hero() {
             </p>
           </div>
           <div className="flex flex-row gap-3">
-            <Button size="lg" className="gap-4" variant="outline">
-              How it works <PhoneCall className="w-4 h-4" />
-            </Button>
-            <Button size="lg" className="gap-4">
-              Get started <MoveRight className="w-4 h-4" />
-            </Button>
+            <Link to="/how-it-works">
+              <Button size="lg" className="gap-4" variant="outline">
+                How it works <PhoneCall className="w-4 h-4" />
+              </Button>
+            </Link>
+            <Link to="/login?mode=signup">
+              <Button size="lg" className="gap-4">
+                Get started <MoveRight className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

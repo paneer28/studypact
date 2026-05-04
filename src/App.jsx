@@ -8,6 +8,8 @@ import Session from './pages/Session.jsx'
 import Profile from './pages/Profile.jsx'
 import Leaderboard from './pages/Leaderboard.jsx'
 import AuthCallback from './pages/AuthCallback.jsx'
+import HowItWorks from './pages/HowItWorks.jsx'
+import LaunchArticle from './pages/LaunchArticle.jsx'
 
 function Protected({ children }) {
   const { user, loading } = useAuth()
@@ -25,6 +27,8 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/launch" element={<LaunchArticle />} />
           <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
           <Route path="/session/:id" element={<Protected><Session /></Protected>} />
           <Route path="/profile" element={<Protected><Profile /></Protected>} />

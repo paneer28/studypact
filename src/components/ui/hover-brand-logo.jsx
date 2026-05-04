@@ -1,28 +1,54 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  SiGoogle,
-  SiSpotify,
-  SiFacebook,
-  SiApple,
-  SiNetflix,
-  SiAirbnb,
-  SiTwitch,
-} from 'react-icons/si'
 
-const brands = [
-  { id: 'google', name: 'Google', Icon: SiGoogle },
-  { id: 'spotify', name: 'Spotify', Icon: SiSpotify },
-  { id: 'facebook', name: 'Facebook', Icon: SiFacebook },
-  { id: 'apple', name: 'Apple', Icon: SiApple },
-  { id: 'netflix', name: 'Netflix', Icon: SiNetflix },
-  { id: 'airbnb', name: 'Airbnb', Icon: SiAirbnb },
-  { id: 'twitch', name: 'Twitch', Icon: SiTwitch },
+const universities = [
+  {
+    id: 'harvard',
+    name: 'Harvard',
+    abbr: 'H',
+    color: '#A51C30',
+  },
+  {
+    id: 'yale',
+    name: 'Yale',
+    abbr: 'Y',
+    color: '#00356B',
+  },
+  {
+    id: 'stanford',
+    name: 'Stanford',
+    abbr: 'S',
+    color: '#8C1515',
+  },
+  {
+    id: 'upenn',
+    name: 'UPenn',
+    abbr: 'P',
+    color: '#011F5B',
+  },
+  {
+    id: 'duke',
+    name: 'Duke',
+    abbr: 'D',
+    color: '#003087',
+  },
+  {
+    id: 'princeton',
+    name: 'Princeton',
+    abbr: 'P',
+    color: '#E77500',
+  },
+  {
+    id: 'ucla',
+    name: 'UCLA',
+    abbr: 'U',
+    color: '#2774AE',
+  },
 ]
 
 export default function HoverBrandLogo() {
   const [hoveredId, setHoveredId] = useState(null)
-  const activeBrand = brands.find((b) => b.id === hoveredId)
+  const activeUniv = universities.find((u) => u.id === hoveredId)
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-8 lg:gap-16 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -35,7 +61,7 @@ export default function HoverBrandLogo() {
             aria-hidden
             className="text-3xl lg:text-3xl font-bold tracking-tight whitespace-nowrap opacity-0 pointer-events-none select-none leading-none sm:leading-tight"
           >
-            leading companies
+            leading universities
           </p>
           <div className="absolute inset-0 overflow-hidden">
             <AnimatePresence mode="wait">
@@ -47,7 +73,7 @@ export default function HoverBrandLogo() {
                 transition={{ duration: 0.16, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground leading-none sm:leading-tight tracking-tight whitespace-nowrap"
               >
-                {activeBrand?.name ?? 'leading universities'}
+                {activeUniv?.name ?? 'leading universities'}
               </motion.p>
             </AnimatePresence>
           </div>
@@ -55,7 +81,7 @@ export default function HoverBrandLogo() {
       </div>
 
       <div className="grid grid-cols-4 sm:flex sm:flex-wrap items-center justify-center sm:justify-end gap-1.5 sm:gap-2 w-full sm:w-auto md:mt-6 sm:mt-0">
-        {brands.map(({ id, name, Icon }) => {
+        {universities.map(({ id, name, abbr, color }) => {
           const isActive = hoveredId === id
           const isDimmed = hoveredId !== null && !isActive
           return (
@@ -65,14 +91,19 @@ export default function HoverBrandLogo() {
               className={[
                 'flex items-center justify-center p-2.5 sm:p-3 lg:p-3.5 rounded-lg border transition-all duration-200',
                 isActive
-                  ? 'border-foreground/30 text-foreground bg-foreground/5'
-                  : 'border-transparent text-foreground/30 hover:text-foreground/50',
-                isDimmed ? 'opacity-40 ' : '',
+                  ? 'border-foreground/30 bg-foreground/5'
+                  : 'border-transparent',
+                isDimmed ? 'opacity-40' : '',
               ].join(' ')}
               onMouseEnter={() => setHoveredId(id)}
               onMouseLeave={() => setHoveredId(null)}
             >
-              <Icon className="w-8 h-8 sm:w-6 sm:h-6" />
+              <span
+                className="w-8 h-8 sm:w-6 sm:h-6 flex items-center justify-center font-serif font-bold text-lg leading-none transition-colors duration-200"
+                style={{ color: isActive ? color : 'rgba(255,255,255,0.3)' }}
+              >
+                {abbr}
+              </span>
             </button>
           )
         })}
