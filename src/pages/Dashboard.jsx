@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useFriendsCtx } from '../context/FriendsContext.jsx'
 import { useMatchmaking } from '../hooks/useMatchmaking.js'
 import { useLibraryData } from '../hooks/useLibraryData.js'
-import { useFriends } from '../hooks/useFriends.js'
-import { useStudyInvites } from '../hooks/useStudyInvites.js'
 import MatchQueue from '../components/matchmaking/MatchQueue.jsx'
 import MatchFound from '../components/matchmaking/MatchFound.jsx'
 import XPBar from '../components/profile/XPBar.jsx'
@@ -15,8 +14,7 @@ export default function Dashboard() {
   const { profile, refreshProfile } = useAuth()
   const { status, matchedSessionId, error, join, leave } = useMatchmaking(profile)
   const { studyingCount } = useLibraryData(profile, null)
-  const { friends } = useFriends(profile)
-  const { pendingReceived, pendingSent, sendInvite, acceptInvite, declineInvite } = useStudyInvites(profile)
+  const { friends, pendingReceived, pendingSent, sendInvite, acceptInvite, declineInvite } = useFriendsCtx()
   const [mode, setMode] = useState('random') // 'random' | 'friends'
   const [inviteBusy, setInviteBusy] = useState(null)
   const [toast, setToast] = useState('')

@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
-import { useFriends } from '../hooks/useFriends.js'
-import { useStudyInvites } from '../hooks/useStudyInvites.js'
+import { useFriendsCtx } from '../context/FriendsContext.jsx'
 
 function Avatar({ username, size = 9, color = '#C8871E' }) {
   const initials = (username ?? '??').slice(0, 2).toUpperCase()
@@ -30,8 +29,7 @@ function UserRow({ user, action }) {
 }
 
 // Search bar + results
-function FriendSearch({ profile, friends, outgoing, onRequest }) {
-  const { searchUsers } = useFriends(profile)
+function FriendSearch({ searchUsers, friends, outgoing, onRequest }) {
   const [query,   setQuery]   = useState('')
   const [results, setResults] = useState([])
   const [busy,    setBusy]    = useState(false)
@@ -100,8 +98,7 @@ function FriendSearch({ profile, friends, outgoing, onRequest }) {
 export default function Friends() {
   const navigate = useNavigate()
   const { profile } = useAuth()
-  const { friends, incoming, outgoing, loading, sendRequest, accept, decline, remove } = useFriends(profile)
-  const { sendInvite, pendingSent, cancelInvite } = useStudyInvites(profile)
+  const { friends, incoming, outgoing, loading, sendRequest, accept, decline, remove, searchUsers, sendInvite, pendingSent, cancelInvite } = useFriendsCtx()
   const [toast, setToast] = useState('')
 
   const flash = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000) }
@@ -154,7 +151,7 @@ export default function Friends() {
       <section className="card space-y-3">
         <h2 className="font-display text-lg font-semibold text-stone-200">Find someone</h2>
         <FriendSearch
-          profile={profile}
+          searchUsers={searchUsers}
           friends={friends}
           outgoing={outgoing}
           onRequest={handleRequest}

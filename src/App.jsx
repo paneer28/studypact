@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './context/AuthContext.jsx'
+import { FriendsProvider } from './context/FriendsContext.jsx'
 import Nav from './components/Nav.jsx'
 import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
@@ -28,6 +29,7 @@ function MainLayout({ children }) {
 
 export default function App() {
   return (
+    <FriendsProvider>
     <div className="min-h-dvh font-body">
       <Nav />
       <MainLayout>
@@ -46,5 +48,6 @@ export default function App() {
         </Routes>
       </MainLayout>
     </div>
+    </FriendsProvider>
   )
 }

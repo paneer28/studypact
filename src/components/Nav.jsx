@@ -1,11 +1,11 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
-import { useFriends } from '../hooks/useFriends.js'
+import { useFriendsCtx } from '../context/FriendsContext.jsx'
 
 export default function Nav() {
   const { user, profile, signOut } = useAuth()
   const navigate = useNavigate()
-  const { incoming } = useFriends(profile)
+  const { incoming } = useFriendsCtx() ?? { incoming: [] }
   const pendingCount = incoming.length
 
   const tab = ({ isActive }) =>
