@@ -23,13 +23,13 @@ export default function Timer() {
   const pct = totalMs > 0 ? Math.min(100, (elapsedMs / totalMs) * 100) : 0
 
   return (
-    <div className="card">
-      <div className="flex items-baseline justify-between">
-        <h3 className="font-semibold">Time left</h3>
-        <div className="font-mono text-2xl">{mm}:{ss}</div>
+    <div>
+      <div className="flex items-baseline justify-between mb-2">
+        <span className="text-[10px] uppercase tracking-widest text-slate-600 font-mono">Time left</span>
+        <span className="font-mono text-xl text-white tabular-nums">{mm}:{ss}</span>
       </div>
-      <div className="h-2 rounded-full bg-surface-700 overflow-hidden mt-2">
-        <div className="h-full bg-brand-500 transition-all" style={{ width: `${pct}%` }} />
+      <div className="h-1.5 rounded-full bg-white/[0.07] overflow-hidden">
+        <div className="h-full bg-brand-500 transition-all duration-1000" style={{ width: `${pct}%` }} />
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './context/AuthContext.jsx'
 import Nav from './components/Nav.jsx'
 import Home from './pages/Home.jsx'
@@ -18,11 +18,18 @@ function Protected({ children }) {
   return children
 }
 
+function MainLayout({ children }) {
+  const { pathname } = useLocation()
+  const isSession = pathname.startsWith('/session/')
+  if (isSession) return <>{children}</>
+  return <main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
+}
+
 export default function App() {
   return (
     <div className="min-h-dvh font-body">
       <Nav />
-      <main className="max-w-5xl mx-auto px-4 py-6">
+      <MainLayout>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -35,7 +42,7 @@ export default function App() {
           <Route path="/leaderboard" element={<Protected><Leaderboard /></Protected>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </main>
+      </MainLayout>
     </div>
   )
 }

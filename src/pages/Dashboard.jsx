@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useMatchmaking } from '../hooks/useMatchmaking.js'
+import { useLibraryData } from '../hooks/useLibraryData.js'
 import MatchQueue from '../components/matchmaking/MatchQueue.jsx'
 import MatchFound from '../components/matchmaking/MatchFound.jsx'
 import XPBar from '../components/profile/XPBar.jsx'
@@ -9,6 +10,7 @@ import StreakDisplay from '../components/profile/StreakDisplay.jsx'
 export default function Dashboard() {
   const { profile, refreshProfile } = useAuth()
   const { status, matchedSessionId, error, join, leave } = useMatchmaking(profile)
+  const { studyingCount } = useLibraryData(profile, null)
 
   useEffect(() => { refreshProfile() }, []) // eslint-disable-line
 
@@ -64,6 +66,28 @@ export default function Dashboard() {
           <Stat label="Total XP" value={profile.xp ?? 0} />
         </div>
       </section>
+
+      {/* Library presence bar */}
+      {studyingCount > 0 && (
+        <section className="rounded-2xl border border-amber-500/20 px-5 py-3 flex items-center gap-3"
+                 style={{ background: 'rgba(120,50,10,0.18)' }}>
+          <span className="flex gap-0.5">
+            {Array.from({ length: Math.min(studyingCount, 12) }).map((_, i) => (
+              <span key={i} className="w-1.5 h-4 rounded-full bg-amber-500/60" style={{ height: `${12 + Math.sin(i * 1.7) * 6}px` }} />
+            ))}
+          </span>
+          <div>
+            <p className="text-sm font-medium text-amber-300">
+              <span className="font-mono font-bold">{studyingCount}</span> students in the library right now
+            </p>
+            {profile?.school && (
+              <p className="text-xs text-amber-500/60 mt-0.5">
+                The {profile.school} library is open
+              </p>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Matchmaking */}
       {status === 'idle' && (

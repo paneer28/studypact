@@ -29,12 +29,12 @@ export default function CommitForm() {
 
   if (mine) {
     return (
-      <div className="card">
-        <h3 className="font-semibold text-lg">You committed to:</h3>
-        <p className="mt-1 text-slate-300">{mine}</p>
-        <p className="text-sm text-slate-400">for {session[`duration_${iAm}`]} min</p>
+      <div>
+        <p className="text-[10px] uppercase tracking-widest text-slate-600 font-mono mb-1">You committed to</p>
+        <p className="text-slate-200 text-sm">{mine}</p>
+        <p className="text-xs text-slate-500 mt-0.5">for {session[`duration_${iAm}`]} min</p>
         {!theirs && (
-          <p className="mt-3 text-slate-400 text-sm">
+          <p className="mt-3 text-slate-500 text-xs">
             Waiting for {partner?.username ?? 'your partner'} to commit…
           </p>
         )}
@@ -43,8 +43,8 @@ export default function CommitForm() {
   }
 
   return (
-    <form onSubmit={submit} className="card space-y-3">
-      <h3 className="text-lg font-semibold">What are you studying?</h3>
+    <form onSubmit={submit} className="space-y-3">
+      <h3 className="text-sm font-semibold text-slate-200">What are you studying?</h3>
       <input
         className="input"
         placeholder="e.g. Finish calculus problem set"
