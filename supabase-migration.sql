@@ -111,6 +111,7 @@ create trigger on_xp_event_insert
 
 
 -- 4. bump_streak: updates streak + last_session_date + sessions_completed for any user.
+
 --    Called via supabase.rpc('bump_streak', { p_user_id: '...' }).
 create or replace function bump_streak(p_user_id uuid)
 returns void
@@ -151,5 +152,131 @@ begin
     insert into xp_events (user_id, amount, reason)
     values (p_user_id, 25, 'streak_bonus');
   end if;
+end;
+$$;
+
+
+-- 5. Friendships table + RLS
+create table if not exists friendships (
+  id            uuid primary key default gen_random_uuid(),
+  requester_id  uuid not null references users(id) on delete cascade,
+  addressee_id  uuid not null references users(id) on delete cascade,
+  status        text not null default 'pending' check (status in ('pending','accepted','declined')),
+  created_at    timestamptz not null default now(),
+  unique (requester_id, addressee_id)
+);
+
+alter table friendships enable row level security;
+
+drop policy if exists "view own friendships" on friendships;
+create policy "view own friendships" on friendships
+  for select
+  using (
+    requester_id = (select id from users where auth_id = auth.uid())
+    or
+    addressee_id = (select id from users where auth_id = auth.uid())
+  );
+
+drop policy if exists "insert friendship request" on friendships;
+create policy "insert friendship request" on friendships
+  for insert
+  with check (requester_id = (select id from users where auth_id = auth.uid()));
+
+drop policy if exists "update own friendship" on friendships;
+create policy "update own friendship" on friendships
+  for update
+  using (
+    requester_id = (select id from users where auth_id = auth.uid())
+    or
+    addressee_id = (select id from users where auth_id = auth.uid())
+  );
+
+drop policy if exists "delete own friendship" on friendships;
+create policy "delete own friendship" on friendships
+  for delete
+  using (
+    requester_id = (select id from users where auth_id = auth.uid())
+    or
+    addressee_id = (select id from users where auth_id = auth.uid())
+  );
+
+
+-- 6. Study invites table + RLS
+create table if not exists study_invites (
+  id            uuid primary key default gen_random_uuid(),
+  from_user_id  uuid not null references users(id) on delete cascade,
+  to_user_id    uuid not null references users(id) on delete cascade,
+  status        text not null default 'pending' check (status in ('pending','accepted','declined','expired')),
+  session_id    uuid references sessions(id),
+  created_at    timestamptz not null default now()
+);
+
+alter table study_invites enable row level security;
+
+drop policy if exists "view own invites" on study_invites;
+create policy "view own invites" on study_invites
+  for select
+  using (
+    from_user_id = (select id from users where auth_id = auth.uid())
+    or
+    to_user_id = (select id from users where auth_id = auth.uid())
+  );
+
+drop policy if exists "send invite" on study_invites;
+create policy "send invite" on study_invites
+  for insert
+  with check (from_user_id = (select id from users where auth_id = auth.uid()));
+
+drop policy if exists "update invite" on study_invites;
+create policy "update invite" on study_invites
+  for update
+  using (
+    from_user_id = (select id from users where auth_id = auth.uid())
+    or
+    to_user_id = (select id from users where auth_id = auth.uid())
+  );
+
+
+-- 7. accept_study_invite RPC: atomically creates a session and marks the invite accepted.
+--    Returns the new session uuid so the client can navigate there.
+create or replace function accept_study_invite(p_invite_id uuid)
+returns uuid
+language plpgsql
+security definer set search_path = public
+as $$
+declare
+  v_invite  record;
+  v_session uuid;
+begin
+  select * into v_invite
+  from study_invites
+  where id = p_invite_id and status = 'pending';
+
+  if not found then
+    raise exception 'Invite not found or already used';
+  end if;
+
+  -- create a bilateral session
+  insert into sessions (user_a, user_b, task_a, task_b, status)
+  values (v_invite.from_user_id, v_invite.to_user_id, 'Study session', 'Study session', 'active')
+  returning id into v_session;
+
+  -- mark invite accepted and link the session
+  update study_invites
+  set status = 'accepted', session_id = v_session
+  where id = p_invite_id;
+
+  -- expire any other pending invites between these two users in either direction
+  update study_invites
+  set status = 'expired'
+  where id != p_invite_id
+    and status = 'pending'
+    and (
+      (from_user_id = v_invite.from_user_id and to_user_id = v_invite.to_user_id)
+      or
+      (from_user_id = v_invite.to_user_id   and to_user_id = v_invite.from_user_id)
+    );
+
+  return v_session;
 end;
 $$;
